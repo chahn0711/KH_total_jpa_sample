@@ -18,22 +18,42 @@ import static com.kh.totalJpaSample.utils.Common.CORS_ORIGIN;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService; // MemberService 가져오기
+
     // 회원 등록
     @PostMapping("/new") // PostMapping은 무조건 RequestBody로 받아줌 걍 외워(스웨그를 사용해서 테스트하면 편리)
     public ResponseEntity<Boolean> memberRegister(@RequestBody MemberDto memberDto) {
         boolean isTrue = memberService.saveMember(memberDto);
         return ResponseEntity.ok(isTrue);
     }
+
     // 회원 전체 조회
     @GetMapping("/list")
     public ResponseEntity<List<MemberDto>> memberList() {
         List<MemberDto> list = memberService.getMemberList();
         return ResponseEntity.ok(list);
     }
+
     // 회원 상세 조회
     @GetMapping("/detail/{email}") // 패스베리어블??
     public ResponseEntity<MemberDto> memberDetail(@PathVariable String email) {
         MemberDto memberDto = memberService.getMemberDetail(email);
         return ResponseEntity.ok(memberDto);
+    }
+
+    // 페이지 네이션 조회
+    @GetMapping("/list/page")
+    public ResponseEntity<List<MemberDto>> memberList(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
+        List<MemberDto> list = memberService.getMemberList(page, size);
+        return ResponseEntity.ok(list);
+    }
+
+    // 총 페이지 수 조회
+    @GetMapping("/list/page-cnt")
+    public ResponseEntity<Integer> memberPageCount(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "5") int size) {
+        int pageCnt = memberService.getMemberPage(page, size);
+        return ResponseEntity.ok(pageCnt);
+
     }
 }
